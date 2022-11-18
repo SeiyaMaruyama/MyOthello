@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 public class MyClient extends JFrame implements MouseListener, MouseMotionListener {
     private final JButton[][] buttonArray;//ボタン用の配列
     private final Container c;
+    private JLabel turnLabel = new JLabel();
     int myNumberInt;
     private int myColor;
     private int myTurn;
@@ -39,8 +40,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
         //ウィンドウを作成する
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//ウィンドウを閉じるときに，正しく閉じるように設定する
-        setTitle("MyClient");//ウィンドウのタイトルを設定する
-        setSize(400, 430);//ウィンドウのサイズを設定する
+        setTitle("MyOthello");//ウィンドウのタイトルを設定する
+        setSize(400, 480);//ウィンドウのサイズを設定する
         c = getContentPane();//フレームのペインを取得する
 
         //アイコンの設定
@@ -55,15 +56,13 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
             for(int j = 0; j < 8; j++) {
                 buttonArray[j][i] = new JButton(boardIcon);//ボタンにアイコンを設定する
                 c.add(buttonArray[j][i]);//ペインに貼り付ける
-                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 10, 45, 45);//ボタンの大きさと位置を設定する．(x座標，y座標,xの幅,yの幅）
+                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 60, 45, 45);//ボタンの大きさと位置を設定する．(x座標，y座標,xの幅,yの幅）
                 buttonArray[j][i].addMouseListener(this);//ボタンをマウスでさわったときに反応するようにする
                 buttonArray[j][i].addMouseMotionListener(this);//ボタンをマウスで動かそうとしたときに反応するようにする
                 buttonArray[j][i].setActionCommand(Integer.toString(j * 8 + i));//ボタンに配列の情報を付加する（ネットワークを介してオブジェクトを識別するため）
             }
-            System.out.println();
+            //System.out.println();
         }
-        //ボード初期化
-        init();
 
         //サーバに接続する
         Socket socket = null;
@@ -112,6 +111,10 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                     yourIcon = blackIcon;
                     myTurn = 1;
                 }
+
+                //ボード初期化
+                init();
+
                 label:
                 while(true) {
                     String inputLine = br.readLine();//データを一行分だけ読み込んでみる
@@ -121,6 +124,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                         String cmd = inputTokens[0];//コマンドの取り出し．１つ目の要素を取り出す
                         if(cmd.equals("changeTurn")) {//ターンの交換
                             myTurn = 1 - myTurn;
+                            setTurnLabel();
                             continue;
                         }
                         if(cmd.equals("fin")) {//相手からゲーム終了の知らせを受けて結果表示
@@ -273,7 +277,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //System.out.println("マウスを放した");
     }
 
-    public void mouseDragged(MouseEvent e) {//マウスでオブジェクトとをドラッグしているときの処理
+    public void mouseDragged(MouseEvent e) {//マウスでオブジェクトをドラッグしているときの処理
         /*
         System.out.println("マウスをドラッグ");
         JButton theButton = (JButton) e.getComponent();//型が違うのでキャストする
@@ -308,7 +312,11 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
          */
     }
 
-    public void init() {//ボード初期化&ゲームリセット用
+    //ボード初期化&ゲームリセット用
+    private void init() {
+        setTurnLabel();
+        c.add(turnLabel, BorderLayout.NORTH);
+
         for(int i = 0; i <= 7; i++) {
             for(int j = 0; j <= 7; j++) {
                 buttonArray[i][j].setIcon(boardIcon);
@@ -320,7 +328,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         buttonArray[4][4].setIcon(whiteIcon);
     }
 
-    public boolean judgeButton(int y, int x) {//コマが置けるかの判断
+    private boolean judgeButton(int y, int x) {//コマが置けるかの判断
         boolean flag = false;
 
         for(int i = -1; i <= 1; i++) {
@@ -349,7 +357,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         return flag;
     }
 
-    public int flipButtons(int y, int x, int j, int i) {//ひっくり返せる数をカウント
+    private int flipButtons(int y, int x, int j, int i) {//ひっくり返せる数をカウント
         int flipNum = 0;
         Icon icon;
 
@@ -369,7 +377,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         }
     }
 
-    public boolean judgeGame() {//コマを置いて続行できるかの判断
+    private boolean judgeGame() {//コマを置いて続行できるかの判断
         boolean flag = false;
 
         for(int b = 0; b <= 7; b++) {
@@ -394,7 +402,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         return flag;
     }
 
-    public void judgeResult() {//ゲーム結果
+    private void judgeResult() {//ゲーム結果
         int blackNum = 0;
         int whiteNum = 0;
         for(int i = 0; i < 8; i++) {
@@ -416,10 +424,18 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         }
     }
 
-    public void changeIcon() {//コマのアイコンを交換
+    private void changeIcon() {//コマのアイコンを交換
         ImageIcon changeIcon;
         changeIcon = myIcon;
         myIcon = yourIcon;
         yourIcon = changeIcon;
+    }
+
+    private void setTurnLabel() {
+        if(myTurn == 0) {
+            turnLabel.setText("あなたの番です。");
+        }else if(myTurn == 1) {
+            turnLabel.setText("相手の番です。");
+        }
     }
 }
