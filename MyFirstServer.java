@@ -4,49 +4,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 
-//スレッド部（各クライアントに応じて）
-class ClientProcThread1 extends Thread {
-	private int number;//自分の番号
-	private Socket incoming;
-	private InputStreamReader myIsr;
-	private BufferedReader myIn;
-	private PrintWriter myOut;
-	private String myName;//接続者の名前
-
-	public ClientProcThread1(int n, Socket i, InputStreamReader isr, BufferedReader in, PrintWriter out) {
-		number = n;
-		incoming = i;
-		myIsr = isr;
-		myIn = in;
-		myOut = out;
-	}
-
-	public void run() {
-		try {
-			myOut.println("Hello, client No." + number + "! Enter 'Bye' to exit.");//初回だけ呼ばれる
-			
-			myName = myIn.readLine();//初めて接続したときの一行目は名前
-
-			while (true) {//無限ループで，ソケットへの入力を監視する
-				String str = myIn.readLine();
-				System.out.println("Received from client No."+number+"("+myName+"), Messages: "+str);
-				if (str != null) {//このソケット（バッファ）に入力があるかをチェック
-					if (str.toUpperCase().equals("BYE")) {
-						myOut.println("Good bye!");
-						break;
-					}
-					MyServer.SendAll(str, myName);//サーバに来たメッセージは接続しているクライアント全員に配る
-				}
-			}
-		} catch (Exception e) {
-			//接続が切れたときに、ここに到達
-			System.out.println("Disconnect from client No."+number+"("+myName+")");
-			MyServer.SetFlag(number, false);//接続が切れたのでフラグを下げる
-		}
-	}
-}
-
-class MyServer{
+class MyFirstServer {
 	
 	private static int maxConnection=100;//最大接続数
 	private static Socket[] incoming;//受付用のソケット
@@ -54,7 +12,7 @@ class MyServer{
 	private static InputStreamReader[] isr;//入力ストリーム用の配列
 	private static BufferedReader[] in;//バッファリングをによりテキスト読み込み用の配列
 	private static PrintWriter[] out;//出力ストリーム用の配列
-	private static ClientProcThread1[] myClientProcThread;//スレッド用の配列
+	private static FirstClientProcThread[] myClientProcThread;//スレッド用の配列
 	private static int member;//接続しているメンバーの数
 
 	//全員にメッセージを送る
@@ -82,7 +40,7 @@ class MyServer{
 		isr = new InputStreamReader[maxConnection];
 		in = new BufferedReader[maxConnection];
 		out = new PrintWriter[maxConnection];
-		myClientProcThread = new ClientProcThread1[maxConnection];
+		myClientProcThread = new FirstClientProcThread[maxConnection];
 		
 		int n = 1;
 		member = 0;//誰も接続していないのでメンバー数は０
@@ -99,13 +57,55 @@ class MyServer{
 				in[n] = new BufferedReader(isr[n]);
 				out[n] = new PrintWriter(incoming[n].getOutputStream(), true);
 				
-				myClientProcThread[n] = new ClientProcThread1(n, incoming[n], isr[n], in[n], out[n]);//必要なパラメータを渡しスレッドを作成
+				myClientProcThread[n] = new FirstClientProcThread(n, incoming[n], isr[n], in[n], out[n]);//必要なパラメータを渡しスレッドを作成
 				myClientProcThread[n] .start();//スレッドを開始する
 				member = n;//メンバーの数を更新する
 				n++;
 			}
 		} catch (Exception e) {
 			System.err.println("ソケット作成時にエラーが発生しました: " + e);
+		}
+	}
+}
+
+//スレッド部（各クライアントに応じて）
+class FirstClientProcThread extends Thread {
+	private int number;//自分の番号
+	private Socket incoming;
+	private InputStreamReader myIsr;
+	private BufferedReader myIn;
+	private PrintWriter myOut;
+	private String myName;//接続者の名前
+
+	public FirstClientProcThread(int n, Socket i, InputStreamReader isr, BufferedReader in, PrintWriter out) {
+		number = n;
+		incoming = i;
+		myIsr = isr;
+		myIn = in;
+		myOut = out;
+	}
+
+	public void run() {
+		try {
+			myOut.println("Hello, client No." + number + "! Enter 'Bye' to exit.");//初回だけ呼ばれる
+
+			myName = myIn.readLine();//初めて接続したときの一行目は名前
+
+			while (true) {//無限ループで，ソケットへの入力を監視する
+				String str = myIn.readLine();
+				System.out.println("Received from client No."+number+"("+myName+"), Messages: "+str);
+				if (str != null) {//このソケット（バッファ）に入力があるかをチェック
+					if (str.toUpperCase().equals("BYE")) {
+						myOut.println("Good bye!");
+						break;
+					}
+					MyFirstServer.SendAll(str, myName);//サーバに来たメッセージは接続しているクライアント全員に配る
+				}
+			}
+		} catch (Exception e) {
+			//接続が切れたときに、ここに到達
+			System.out.println("Disconnect from client No."+number+"("+myName+")");
+			MyFirstServer.SetFlag(number, false);//接続が切れたのでフラグを下げる
 		}
 	}
 }

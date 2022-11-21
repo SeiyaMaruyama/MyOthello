@@ -1,9 +1,6 @@
 <component name="libraryTable">
   <library name="MyOthello">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/3.jar!/" />
-      <root url="jar://$PROJECT_DIR$/MyClient.zip!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>

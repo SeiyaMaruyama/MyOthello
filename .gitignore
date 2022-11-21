@@ -1,2 +1,14 @@
 # プロジェクトの除外パス
 /out/
+/.gitignore
+/.idea/
+/.vscode/
+/MyBlack.jpg
+/MyWhite.jpg
+/MyFirstServer.java
+/MyFirstServer.class
+/FirstClientProcThread.class
+/ClientProcThread.class
+/MyClientCopy.java
+/MyClientCopy.class
+/MyClientCopy$MesgRecvThread.class

@@ -95,7 +95,7 @@ public class MyChatClient extends JFrame implements ActionListener {
         if(ae.getActionCommand() == "Send") {
             String msg = tfKeyin.getText();//入力したテキストを得る
             tfKeyin.setText("");//tfKeyinのTextをクリアする
-            if(msg.length() > 0) {//入力したメッセージの長さが０で無ければ，
+            if(msg.length() > 0) {
                 out.println(msg);
                 out.flush();
             }

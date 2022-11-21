@@ -39,26 +39,29 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         }
 
         //ウィンドウを作成する
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//ウィンドウを閉じるときに，正しく閉じるように設定する
-        setTitle("MyOthello");//ウィンドウのタイトルを設定する
-        setSize(400, 480);//ウィンドウのサイズを設定する
-        c = getContentPane();//フレームのペインを取得する
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("MyOthello");
+        setSize(400, 480);
+        c = getContentPane();//フレームのペインを取得
 
         //アイコンの設定
-        whiteIcon = new ImageIcon("White.jpg");
-        blackIcon = new ImageIcon("Black.jpg");
-        boardIcon = new ImageIcon("GreenFrame.jpg");
+        whiteIcon = new ImageIcon("/White.jpg");
+        blackIcon = new ImageIcon("/Black.jpg");
+        boardIcon = new ImageIcon("/GreenFrame.jpg");
 
-        c.setLayout(null);//自動レイアウトの設定を行わない
+        c.setLayout(null);//自動レイアウトの無効化
+
+        turnLabel.setBounds(20,20,100,50);
+
         //ボタンの生成
-        buttonArray = new JButton[8][8];//ボタンの配列を５個作成する[0]から[7]まで使える
+        buttonArray = new JButton[8][8];
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 buttonArray[j][i] = new JButton(boardIcon);//ボタンにアイコンを設定する
-                c.add(buttonArray[j][i]);//ペインに貼り付ける
-                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 60, 45, 45);//ボタンの大きさと位置を設定する．(x座標，y座標,xの幅,yの幅）
-                buttonArray[j][i].addMouseListener(this);//ボタンをマウスでさわったときに反応するようにする
-                buttonArray[j][i].addMouseMotionListener(this);//ボタンをマウスで動かそうとしたときに反応するようにする
+                c.add(buttonArray[j][i]);//ペインに貼り付け
+                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 60, 45, 45);
+                buttonArray[j][i].addMouseListener(this);
+                buttonArray[j][i].addMouseMotionListener(this);
                 buttonArray[j][i].setActionCommand(Integer.toString(j * 8 + i));//ボタンに配列の情報を付加する（ネットワークを介してオブジェクトを識別するため）
             }
             //System.out.println();
@@ -113,13 +116,13 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                 }
 
                 //ボード初期化
-                init();
+                initBoard();
 
                 label:
                 while(true) {
-                    String inputLine = br.readLine();//データを一行分だけ読み込んでみる
-                    if(inputLine != null) {//読み込んだときにデータが読み込まれたかどうかをチェックする
-                        System.out.println(inputLine);//デバッグ（動作確認用）にコンソールに出力する
+                    String inputLine = br.readLine();//データを一行分だけ読み込む
+                    if(inputLine != null) {//読み込んだときにデータが読み込まれたかどうかをチェック
+                        System.out.println(inputLine);//デバッグ（動作確認用）にコンソールに出力
                         String[] inputTokens = inputLine.split(" ");    //入力データを解析するために、スペースで切り分ける
                         String cmd = inputTokens[0];//コマンドの取り出し．１つ目の要素を取り出す
                         if(cmd.equals("changeTurn")) {//ターンの交換
@@ -128,7 +131,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                             continue;
                         }
                         if(cmd.equals("fin")) {//相手からゲーム終了の知らせを受けて結果表示
-                            judgeResult();//結果
+                            judgeResult();//結果表示
                             break;
                         }
                         switch(cmd) {
@@ -230,7 +233,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public static void main(String[] args) {
-        MyClient net = new MyClient();
+        MyClientCopy net = new MyClientCopy();
         net.setVisible(true);
     }
 
@@ -278,42 +281,15 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public void mouseDragged(MouseEvent e) {//マウスでオブジェクトをドラッグしているときの処理
-        /*
-        System.out.println("マウスをドラッグ");
-        JButton theButton = (JButton) e.getComponent();//型が違うのでキャストする
-        String theArrayIndex = theButton.getActionCommand();//ボタンの配列の番号を取り出す
-
-        if(Integer.parseInt(theArrayIndex) != 0) {
-            Point theMLoc = e.getPoint();//発生元コンポーネントを基準とする相対座標
-            System.out.println(theMLoc);//デバッグ（確認用）に，取得したマウスの位置をコンソールに出力する
-            Point theBtnLocation = theButton.getLocation();//クリックしたボタンを座標を取得する
-            theBtnLocation.x += theMLoc.x - 15;//ボタンの真ん中当たりにマウスカーソルがくるように補正する
-            theBtnLocation.y += theMLoc.y - 15;//ボタンの真ん中当たりにマウスカーソルがくるように補正する
-            theButton.setLocation(theBtnLocation);//マウスの位置にあわせてオブジェクトを移動する
-
-            //送信情報を作成する（受信時には，この送った順番にデータを取り出す．スペースがデータの区切りとなる）
-            String msg = "move" + " " + theArrayIndex + " " + theBtnLocation.x + " " + theBtnLocation.y;
-
-            //サーバに情報を送る
-            out.println(msg);//送信データをバッファに書き出す
-            out.flush();//送信データをフラッシュ（ネットワーク上にはき出す）する
-
-            repaint();//オブジェクトの再描画を行う
-        }
-         */
+        //System.out.println("マウスをドラッグ");
     }
 
     public void mouseMoved(MouseEvent e) {//マウスがオブジェクト上で移動したときの処理
-        /*
-        System.out.println("マウス移動");
-        int theMLocX = e.getX();//マウスのx座標を得る
-        int theMLocY = e.getY();//マウスのy座標を得る
-        System.out.println(theMLocX + "," + theMLocY);//コンソールに出力する
-         */
+        //System.out.println("マウス移動");
     }
 
     //ボード初期化&ゲームリセット用
-    private void init() {
+    private void initBoard() {
         setTurnLabel();
         c.add(turnLabel, BorderLayout.NORTH);
 
@@ -378,8 +354,6 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     private boolean judgeGame() {//コマを置いて続行できるかの判断
-        boolean flag = false;
-
         for(int b = 0; b <= 7; b++) {
             for(int a = 0; a <= 7; a++) {
                 if(buttonArray[b][a].getIcon() == boardIcon) {//ボードアイコンとなっている場所について調べる
@@ -389,8 +363,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                                 if(!(t == 0 && s == 0)) {
                                     int fNum = flipButtons(b, a, t, s);
                                     if(fNum >= 1) {//ひっくりかえせる場所を見つけたらゲームが続行可能と判断
-                                        flag = true;
-                                        return flag;
+                                        return true;
                                     }
                                 }
                             }
@@ -399,7 +372,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                 }
             }
         }
-        return flag;
+        return false;
     }
 
     private void judgeResult() {//ゲーム結果
