@@ -122,7 +122,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                 while(true) {
                     String inputLine = br.readLine();//データを一行分だけ読み込む
                     if(inputLine != null) {//読み込んだときにデータが読み込まれたかどうかをチェック
-                        System.out.println(inputLine);//デバッグ（動作確認用）にコンソールに出力
+                        //System.out.println(inputLine);//デバッグ（動作確認用）にコンソールに出力
                         String[] inputTokens = inputLine.split(" ");    //入力データを解析するために、スペースで切り分ける
                         String cmd = inputTokens[0];//コマンドの取り出し．１つ目の要素を取り出す
                         if(cmd.equals("changeTurn")) {//ターンの交換
@@ -238,7 +238,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public void mouseClicked(MouseEvent e) {//ボタンをクリックしたときの処理
-        System.out.println("クリック");
+        //System.out.println("クリック");
         JButton theButton = (JButton) e.getComponent();//クリックしたオブジェクトを得る．型が違うのでキャストする
         String theArrayIndex = theButton.getActionCommand();//ボタンの配列の番号を取り出す
         int temp = Integer.parseInt(theArrayIndex);//座標に変換
@@ -246,7 +246,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         y = temp / 8;
 
         Icon theIcon = theButton.getIcon();//theIconには，現在のボタンに設定されたアイコンが入る
-        System.out.println(theIcon);//デバッグ（確認用）に，クリックしたアイコンの名前を出力する
+        //System.out.println(theIcon);//デバッグ（確認用）に，クリックしたアイコンの名前を出力する
 
         if(myTurn == 0 && theIcon.equals(boardIcon)) {
             if(judgeButton(y, x)) {
