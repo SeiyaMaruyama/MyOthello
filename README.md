@@ -1,5 +1,5 @@
 # MyOthello
-Java演で作ったオセロ
+Javaで作ったオセロ
 
 <使い方>
 1. MyServer.javaをコンパイルした後、「java MyServer」でサーバを起動してください。
