@@ -236,7 +236,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public static void main(String[] args) {
-        MyClientCopy net = new MyClientCopy();
+        MyClient net = new MyClient();
         net.setVisible(true);
     }
 
