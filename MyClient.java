@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 public class MyClient extends JFrame implements MouseListener, MouseMotionListener {
     private final JButton[][] buttonArray;//ボタン用の配列
     private final Container c;
+    private JLabel myIconLabel = new JLabel();
     private JLabel turnLabel = new JLabel();
     int myNumberInt;
     private int myColor;
@@ -25,7 +26,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     private PrintWriter out;//出力用のライター
 
 
-    public MyClient() {
+    private MyClient() {
         //名前の入力ダイアログを開く
         String myName = JOptionPane.showInputDialog(null, "名前を入力してください", "名前の入力", JOptionPane.QUESTION_MESSAGE);
         if(myName.equals("")) {
@@ -41,7 +42,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //ウィンドウを作成する
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MyOthello");
-        setSize(400, 480);
+        setSize(400, 600);
         c = getContentPane();//フレームのペインを取得
 
         //アイコンの設定
@@ -51,6 +52,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
         c.setLayout(null);//自動レイアウトの無効化
 
+        //どちらのターンか示す表示
+        c.add(turnLabel);
         turnLabel.setBounds(20,20,100,50);
 
         //ボタンの生成
@@ -291,7 +294,14 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     //ボード初期化&ゲームリセット用
     private void initBoard() {
         setTurnLabel();
-        c.add(turnLabel, BorderLayout.NORTH);
+        myIconLabel.setBounds(10,20, 50,50);
+        if (myColor ==0) {
+            myIconLabel.setIcon(blackIcon);
+        }else if(myColor == 1) {
+            myIconLabel.setIcon(whiteIcon);
+        }else {
+            System.out.println("miss");
+        }
 
         for(int i = 0; i <= 7; i++) {
             for(int j = 0; j <= 7; j++) {
@@ -304,7 +314,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         buttonArray[4][4].setIcon(whiteIcon);
     }
 
-    private boolean judgeButton(int y, int x) {//コマが置けるかの判断
+    //コマが置けるかの判断
+    private boolean judgeButton(int y, int x) {
         boolean flag = false;
 
         for(int i = -1; i <= 1; i++) {
