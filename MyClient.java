@@ -26,7 +26,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     private PrintWriter out;//出力用のライター
 
 
-    private MyClient() {
+    public MyClient() {
         //名前の入力ダイアログを開く
         String myName = JOptionPane.showInputDialog(null, "名前を入力してください", "名前の入力", JOptionPane.QUESTION_MESSAGE);
         if(myName.equals("")) {
@@ -42,7 +42,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //ウィンドウを作成する
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MyOthello");
-        setSize(400, 600);
+        setSize(400, 800);
         c = getContentPane();//フレームのペインを取得
 
         //アイコンの設定
@@ -242,6 +242,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
     public void mouseClicked(MouseEvent e) {//ボタンをクリックしたときの処理
         //System.out.println("クリック");
+        System.out.println("omg");
         JButton theButton = (JButton) e.getComponent();//クリックしたオブジェクトを得る．型が違うのでキャストする
         String theArrayIndex = theButton.getActionCommand();//ボタンの配列の番号を取り出す
         int temp = Integer.parseInt(theArrayIndex);//座標に変換
