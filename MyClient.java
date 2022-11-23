@@ -42,13 +42,13 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //ウィンドウを作成する
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MyOthello");
-        setSize(400, 800);
+        setSize(400, 500);
         c = getContentPane();//フレームのペインを取得
 
         //アイコンの設定
-        whiteIcon = new ImageIcon("/White.jpg");
-        blackIcon = new ImageIcon("/Black.jpg");
-        boardIcon = new ImageIcon("/GreenFrame.jpg");
+        whiteIcon = new ImageIcon("White.jpg");
+        blackIcon = new ImageIcon("Black.jpg");
+        boardIcon = new ImageIcon("GreenFrame.jpg");
 
         c.setLayout(null);//自動レイアウトの無効化
 
@@ -236,7 +236,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     public static void main(String[] args) {
-        MyClientCopy net = new MyClientCopy();
+        MyClient net = new MyClient();
         net.setVisible(true);
     }
 
