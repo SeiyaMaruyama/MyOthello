@@ -14,7 +14,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     private final JButton[][] buttonArray;//ボタン用の配列
     private final Container c;
     private JLabel myIconLabel = new JLabel();
-    private JLabel turnLabel = new JLabel();
+    private JLabel myIconTextLabel = new JLabel();
+    private JLabel turnTextLabel = new JLabel();
     int myNumberInt;
     private int myColor;
     private int myTurn;
@@ -22,6 +23,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     private final ImageIcon blackIcon;
     private final ImageIcon whiteIcon;
     private final ImageIcon boardIcon;
+    private int blackNum = 0;
+    private int whiteNum = 0;
     private int x, y;
     private PrintWriter out;//出力用のライター
 
@@ -52,9 +55,15 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
         c.setLayout(null);//自動レイアウトの無効化
 
+        //自分の石の表示
+        c.add(myIconLabel);
+        myIconLabel.setBounds(10,5, 50,50);
+        c.add(myIconTextLabel);
+        myIconTextLabel.setBounds(60, 5, 150, 50);
+
         //どちらのターンか示す表示
-        c.add(turnLabel);
-        turnLabel.setBounds(20,20,100,50);
+        c.add(turnTextLabel);
+        turnTextLabel.setBounds(15,45,150,50);
 
         //ボタンの生成
         buttonArray = new JButton[8][8];
@@ -62,7 +71,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
             for(int j = 0; j < 8; j++) {
                 buttonArray[j][i] = new JButton(boardIcon);//ボタンにアイコンを設定する
                 c.add(buttonArray[j][i]);//ペインに貼り付け
-                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 60, 45, 45);
+                buttonArray[j][i].setBounds(i * 45 + 10, j * 45 + 85, 45, 45);
                 buttonArray[j][i].addMouseListener(this);
                 buttonArray[j][i].addMouseMotionListener(this);
                 buttonArray[j][i].setActionCommand(Integer.toString(j * 8 + i));//ボタンに配列の情報を付加する（ネットワークを介してオブジェクトを識別するため）
@@ -125,7 +134,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                 while(true) {
                     String inputLine = br.readLine();//データを一行分だけ読み込む
                     if(inputLine != null) {//読み込んだときにデータが読み込まれたかどうかをチェック
-                        //System.out.println(inputLine);//デバッグ（動作確認用）にコンソールに出力
+                        //System.out.println(inputLine);//デバッグとしてコンソールに出力
                         String[] inputTokens = inputLine.split(" ");    //入力データを解析するために、スペースで切り分ける
                         String cmd = inputTokens[0];//コマンドの取り出し．１つ目の要素を取り出す
                         if(cmd.equals("changeTurn")) {//ターンの交換
@@ -242,7 +251,6 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
     public void mouseClicked(MouseEvent e) {//ボタンをクリックしたときの処理
         //System.out.println("クリック");
-        System.out.println("omg");
         JButton theButton = (JButton) e.getComponent();//クリックしたオブジェクトを得る．型が違うのでキャストする
         String theArrayIndex = theButton.getActionCommand();//ボタンの配列の番号を取り出す
         int temp = Integer.parseInt(theArrayIndex);//座標に変換
@@ -250,7 +258,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         y = temp / 8;
 
         Icon theIcon = theButton.getIcon();//theIconには，現在のボタンに設定されたアイコンが入る
-        //System.out.println(theIcon);//デバッグ（確認用）に，クリックしたアイコンの名前を出力する
+        //System.out.println(theIcon);//デバッグとしてクリックしたアイコンの名前を出力する
 
         if(myTurn == 0 && theIcon.equals(boardIcon)) {
             if(judgeButton(y, x)) {
@@ -294,14 +302,16 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
     //ボード初期化&ゲームリセット用
     private void initBoard() {
+        blackNum = 0;
+        whiteNum = 0;
+
         setTurnLabel();
-        myIconLabel.setBounds(10,20, 50,50);
         if (myColor ==0) {
             myIconLabel.setIcon(blackIcon);
+            myIconTextLabel.setText("← あなたの石は黒です。");
         }else if(myColor == 1) {
             myIconLabel.setIcon(whiteIcon);
-        }else {
-            System.out.println("miss");
+            myIconTextLabel.setText("← あなたの石は白です。");
         }
 
         for(int i = 0; i <= 7; i++) {
@@ -388,8 +398,6 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
     }
 
     private void judgeResult() {//ゲーム結果
-        int blackNum = 0;
-        int whiteNum = 0;
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 Icon resultIcon = buttonArray[j][i].getIcon();
@@ -402,10 +410,13 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         }
         if(blackNum == whiteNum) {
             System.out.println("Draw");
+            turnTextLabel.setText("ゲーム終了! 引き分けです!");
         }else if(blackNum > whiteNum) {
             System.out.println("Black Win");
+            turnTextLabel.setText("ゲーム終了! 黒の勝ちです!");
         }else {
             System.out.println("White Win");
+            turnTextLabel.setText("ゲーム終了! 白の勝ちです!");
         }
     }
 
@@ -418,9 +429,9 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
     private void setTurnLabel() {
         if(myTurn == 0) {
-            turnLabel.setText("あなたの番です。");
+            turnTextLabel.setText("ターン  : あなたの番です。");
         }else if(myTurn == 1) {
-            turnLabel.setText("相手の番です。");
+            turnTextLabel.setText("ターン  : 相手の番です。");
         }
     }
 }
