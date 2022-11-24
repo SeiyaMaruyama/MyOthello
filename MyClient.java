@@ -82,8 +82,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //サーバに接続する
         Socket socket = null;
         try {
-            //"localhost"は，自分内部への接続．localhostを接続先のIP Address（"133.42.155.201"形式）に設定すると他のPCのサーバと通信できる
-            //10000はポート番号．IP Addressで接続するPCを決めて，ポート番号でそのPC上動作するプログラムを特定する
+            //"localhost"は、自分内部への接続．localhostを接続先のIP Address（"133.42.155.201"形式）に設定すると他のPCのサーバと通信できる
+            //10000はポート番号。IP Addressで接続するPCを決めて、ポート番号でそのPC上動作するプログラムを特定する
             socket = new Socket(myAddress, 10000);
         }catch(UnknownHostException e) {
             System.err.println("ホストの IP アドレスが判定できません: " + e);
@@ -135,42 +135,37 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                     String inputLine = br.readLine();//データを一行分だけ読み込む
                     if(inputLine != null) {//読み込んだときにデータが読み込まれたかどうかをチェック
                         //System.out.println(inputLine);//デバッグとしてコンソールに出力
-                        String[] inputTokens = inputLine.split(" ");    //入力データを解析するために、スペースで切り分ける
-                        String cmd = inputTokens[0];//コマンドの取り出し．１つ目の要素を取り出す
+                        String[] inputTokens = inputLine.split(" ");//入力データを区切って取り出せるようスペースで切り分ける
+                        String cmd = inputTokens[0];//コマンドの取り出し。１つ目の要素を取り出す
                         if(cmd.equals("changeTurn")) {//ターンの交換
                             myTurn = 1 - myTurn;
                             setTurnLabel();
+
                             continue;
                         }
                         if(cmd.equals("fin")) {//相手からゲーム終了の知らせを受けて結果表示
                             judgeResult();//結果表示
+
                             break;
                         }
                         switch(cmd) {
                             case "move": {//cmdの文字と"move"が同じか調べる．同じ時にtrueとなる
                                 //moveの時の処理(コマの移動の処理)
                                 String theBName = inputTokens[1];//ボタンの名前（番号）の取得
-
                                 int theBnumRaw = Integer.parseInt(theBName) / 8;//ボタンの名前を数値に変換する
-
                                 int theBnumCol = Integer.parseInt(theBName) % 8;//ボタンの名前を数値に変換する
-
                                 int x = Integer.parseInt(inputTokens[2]);//数値に変換する
-
                                 int y = Integer.parseInt(inputTokens[3]);//数値に変換する
 
                                 buttonArray[theBnumRaw][theBnumCol].setLocation(x, y);//指定のボタンを位置をx,yに設定する
 
                                 break;
                             }
-                            case "place": {//cmdの文字と"place"が同じか調べる．同じ時にtrueとなる
+                            case "place": {//cmdの文字と"place"が同じか調べる。同じ時にtrueとなる
                                 //placeの時の処理(コマを置く処理)
                                 String theBName = inputTokens[1];//ボタンの名前（番号）の取得
-
                                 int theBnumRaw = Integer.parseInt(theBName) / 8;//ボタンの名前を数値に変換する
-
                                 int theBnumCol = Integer.parseInt(theBName) % 8;//ボタンの名前を数値に変換する
-
                                 int theColor = Integer.parseInt(inputTokens[2]);//数値に変換する
 
                                 if(theColor == myColor) {//アイコンがwhiteIconと同じなら(→変更後:myColorが0なら)
@@ -186,10 +181,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                                             judgeResult();//結果
 
                                             String msg = "fin";//相手にゲーム終了の通知
-
                                             //サーバに情報を送る
                                             out.println(msg);//送信データをバッファに書き出す
-
                                             out.flush();//送信データをフラッシュ（ネットワーク上にはき出す）する
 
                                             break label;
@@ -200,36 +193,29 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
                                         changeIcon();//アイコンをもとに戻す
 
                                         String msg = "changeTurn";//ターン交換用のメッセージ作成
-
                                         //サーバに情報を送る
                                         out.println(msg);//送信データをバッファに書き出す
-
                                         out.flush();//送信データをフラッシュ（ネットワーク上にはき出す）する
-
                                     }
                                 }else {
                                     buttonArray[theBnumRaw][theBnumCol].setIcon(yourIcon);//whiteIconに設定する
-
                                 }
+
                                 break;
                             }
-                            case "flip": {//cmdの文字と"flip"が同じか調べる．同じ時にtrueとなる
+                            case "flip": {//cmdの文字と"flip"が同じか調べる。同じ時にtrueとなる
                                 //flipの時の処理(コマを置く処理)
                                 String theBName = inputTokens[1];//ボタンの名前（番号）の取得
-
                                 int theBnumRaw = Integer.parseInt(theBName) / 8;//ボタンの名前を数値に変換する
-
                                 int theBnumCol = Integer.parseInt(theBName) % 8;//ボタンの名前を数値に変換する
-
                                 int theColor = Integer.parseInt(inputTokens[2]);//数値に変換する
 
-                                if(theColor == myColor) {//アイコンがwhiteIconと同じなら(→変更後:myColorが0なら)
+                                if(theColor == myColor) {//置かれるべき石の色を区別しながら置く
                                     buttonArray[theBnumRaw][theBnumCol].setIcon(myIcon);//blackIconに設定する
-
                                 }else {
                                     buttonArray[theBnumRaw][theBnumCol].setIcon(yourIcon);//whiteIconに設定する
-
                                 }
+
                                 break;
                             }
                             default:
@@ -251,7 +237,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
     public void mouseClicked(MouseEvent e) {//ボタンをクリックしたときの処理
         //System.out.println("クリック");
-        JButton theButton = (JButton) e.getComponent();//クリックしたオブジェクトを得る．型が違うのでキャストする
+        JButton theButton = (JButton) e.getComponent();//クリックしたオブジェクトを得た後、キャストする
         String theArrayIndex = theButton.getActionCommand();//ボタンの配列の番号を取り出す
         int temp = Integer.parseInt(theArrayIndex);//座標に変換
         x = temp % 8;
@@ -262,9 +248,8 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
 
         if(myTurn == 0 && theIcon.equals(boardIcon)) {
             if(judgeButton(y, x)) {
-                //送信情報を作成する（受信時には，この送った順番にデータを取り出す．スペースがデータの区切りとなる）
+                //送信情報を作成する（受信時は、この送ったデータを順番にスペースを区切りとして取り出す。）
                 String msg = "place" + " " + theArrayIndex + " " + myColor;
-
                 //サーバに情報を送る
                 out.println(msg);//送信データをバッファに書き出す
                 out.flush();//送信データをフラッシュ（ネットワーク上にはき出す）する
@@ -284,7 +269,7 @@ public class MyClient extends JFrame implements MouseListener, MouseMotionListen
         //System.out.println("マウス脱出");
     }
 
-    public void mousePressed(MouseEvent e) {//マウスでオブジェクトを押したときの処理（クリックとの違いに注意）
+    public void mousePressed(MouseEvent e) {//マウスでオブジェクトを押したときの処理（※クリックとは違う）
         //System.out.println("マウスを押した");
     }
 
